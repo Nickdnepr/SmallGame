@@ -1,5 +1,6 @@
 package com.nickdnepr.smallgame.core.objects.units;
 
+import com.nickdnepr.smallgame.core.map.routing.RoutingPredicate;
 import com.nickdnepr.smallgame.core.objects.BaseEntity;
 import com.nickdnepr.smallgame.core.objects.EntityType;
 import com.nickdnepr.smallgame.core.objects.UnitClass;
@@ -11,16 +12,17 @@ public class Unit extends BaseEntity {
 
     private UnitClass unitClass;
     private UnitType unitType;
+    private RoutingPredicate routingPredicate;
     private double actionPoints;
     private double maxActionPoints;
     private int transportWeight;
-    private boolean reinforced;
     private ArrayList<Weapon> weapons;
 
-    public Unit(String name, int hp, int maxHp, int armor, int maxArmor, int defence, int maxDefence, int visionRadius, int maxVisionRadius, int visibilityCoefficient, int maxVisibilityCoefficient, UnitClass unitClass, UnitType unitType, double actionPoints, double maxActionPoints, int transportWeight, ArrayList<Weapon> weapons) {
+    public Unit(String name, int hp, int maxHp, int armor, int maxArmor, int defence, int maxDefence, int visionRadius, int maxVisionRadius, int visibilityCoefficient, int maxVisibilityCoefficient, UnitClass unitClass, UnitType unitType, RoutingPredicate routingPredicate, double actionPoints, double maxActionPoints, int transportWeight, ArrayList<Weapon> weapons) {
         super(name, EntityType.UNIT, hp, maxHp, armor, maxArmor, defence, maxDefence, visionRadius, maxVisionRadius, visibilityCoefficient, maxVisibilityCoefficient);
         this.unitClass = unitClass;
         this.unitType = unitType;
+        this.routingPredicate = routingPredicate;
         this.actionPoints = actionPoints;
         this.maxActionPoints = maxActionPoints;
         this.transportWeight = transportWeight;
@@ -32,7 +34,4 @@ public class Unit extends BaseEntity {
         this.actionPoints = maxActionPoints;
     }
 
-    public void reinforce(){
-
-    }
 }

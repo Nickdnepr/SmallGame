@@ -37,7 +37,6 @@ public class GameMap {
     public void deletePoint(Coordinates coordinates){
         Point point = getPoint(coordinates);
         points.remove(point);
-
     }
 
     public Point getPoint(Coordinates coordinates) {

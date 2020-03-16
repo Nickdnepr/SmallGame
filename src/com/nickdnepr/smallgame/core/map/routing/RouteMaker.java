@@ -11,7 +11,8 @@ public class RouteMaker {
         this.gameMap = gameMap;
     }
 
-    public Route getRoute(Coordinates source, Coordinates destination){
+    public Route getRoute(Coordinates source, Coordinates destination, RoutingPredicate routingPredicate){
+        
         return null;
     }
 }

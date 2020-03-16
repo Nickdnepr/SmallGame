@@ -26,7 +26,15 @@ public class Coordinates {
         this.y = y;
     }
 
+    public boolean isSame(Coordinates coordinates) {
+        return x == coordinates.x && y == coordinates.y;
+    }
+
     public boolean isNear(Coordinates coordinates) {
-        return Math.abs(x - coordinates.x) < 2 && Math.abs(y - coordinates.y) < 2;
+        return Math.abs(x - coordinates.x) < 2 && Math.abs(y - coordinates.y) < 2 && !isSame(coordinates);
+    }
+
+    public boolean isCorner(Coordinates coordinates) {
+        return isNear(coordinates) && x != coordinates.x && y != coordinates.y;
     }
 }
