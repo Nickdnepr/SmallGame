@@ -9,7 +9,7 @@ public interface RoutingPredicate {
 
     double getMovementPrice(Point source, Point destination);
 
-    default RoutingPredicate standardPredicate() {
+    static RoutingPredicate standardPredicate() {
         return new RoutingPredicate() {
             @Override
             public boolean validatePoint(Point point) {

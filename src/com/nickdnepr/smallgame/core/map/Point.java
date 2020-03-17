@@ -37,4 +37,30 @@ public class Point {
     public void setRelief(Relief relief) {
         this.relief = relief;
     }
+
+    @Override
+    public String toString() {
+        return "Point{" +
+                "coordinates=" + coordinates +
+                ", relief=" + relief +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Point point = (Point) o;
+
+        if (coordinates != null ? !coordinates.equals(point.coordinates) : point.coordinates != null) return false;
+        return relief == point.relief;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = coordinates != null ? coordinates.hashCode() : 0;
+        result = 31 * result + (relief != null ? relief.hashCode() : 0);
+        return result;
+    }
 }
