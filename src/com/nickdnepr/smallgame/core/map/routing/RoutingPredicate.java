@@ -18,6 +18,12 @@ public interface RoutingPredicate {
 
             @Override
             public double getMovementPrice(Point source, Point destination) {
+                if (source.getCoordinates().isSame(destination.getCoordinates())){
+                    return 0;
+                }
+                if (!source.getCoordinates().isNear(destination.getCoordinates())){
+                    return -1;
+                }
                 double price = 1.0;
                 price *= destination.getRelief().getMovementCoefficient();
                 price *= destination.getCoordinates().isCorner(source.getCoordinates()) ? 1.41 : 1.0;
