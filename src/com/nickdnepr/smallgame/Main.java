@@ -29,7 +29,7 @@ public class Main {
         gameMap.addPoint(new Point(new Coordinates(2, 2), Relief.EARTH));
 
         RouteMaker routeMaker = new RouteMaker(gameMap);
-        routeMaker.getRoute(new Coordinates(0, 0), new Coordinates(2, 2), RoutingPredicate.standardPredicate());
+        routeMaker.getRoute(new Coordinates(1, 0), new Coordinates(2, 2), RoutingPredicate.standardPredicate());
 
 //        int width = 2;
 //        int height = 2;

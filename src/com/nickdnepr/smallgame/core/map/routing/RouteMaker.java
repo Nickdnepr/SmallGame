@@ -6,6 +6,7 @@ import com.nickdnepr.smallgame.core.map.Point;
 import com.nickdnepr.smallgame.core.utils.Pair;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class RouteMaker {
@@ -53,6 +54,7 @@ public class RouteMaker {
 
         System.out.println(routingAreaPoints.size());
 
+
         double[][] weights = new double[routingAreaPoints.size()][routingAreaPoints.size()];
         for (int y = 0; y < routingAreaPoints.size(); y++) {
             for (int x = 0; x < routingAreaPoints.size(); x++) {
@@ -61,32 +63,58 @@ public class RouteMaker {
             }
         }
 
-        HashMap<Point, Double> distanceMap = new HashMap<>();
-        Point marker = sourcePoint;
+        HashMap<Point, Pair<Double, Boolean>> distanceMap = new HashMap<>();
+        Pair<Point, Double> marker = new Pair<>(sourcePoint, 0.0);
         int processed = 0;
+        distanceMap.put(sourcePoint, new Pair<>(0.0, false));
         for (Point point : routingAreaPoints) {
-            distanceMap.put(point, -1.0);
+            distanceMap.putIfAbsent(point, new Pair<>(-1.0, false));
         }
-
-        while (processed < distanceMap.size()) {
-            int markerIndex = routingAreaPoints.indexOf(marker);
-            for (int i = 0; i < routingAreaPoints.size(); i++) {
-                double rawDistance = weights[i][markerIndex];
-                if (rawDistance > 0) {
-                    double distance = rawDistance + distanceMap.get(marker);
-                    Point processingPoint = routingAreaPoints.get(i);
-                    double processingPointValue = distanceMap.get(processingPoint);
-                    if (processingPointValue > distance || processingPointValue == -1) {
-
+//        System.out.println(distanceMap.toString());
+        while (!allProcessed(distanceMap.values())) {
+            Pair<Point, Double> nextMarker = null;
+            for (Point point : distanceMap.keySet()) {
+                if (point != marker.getKey()) {
+                    double rawDistance = weights[routingAreaPoints.indexOf(point)][routingAreaPoints.indexOf(marker.getKey())];
+                    if (rawDistance > 0) {
+                        double fullDistance = rawDistance + distanceMap.get(marker.getKey()).getKey();
+                        double pointDistance = distanceMap.get(point).getKey();
+                        if (pointDistance > fullDistance || pointDistance == -1.0) {
+                            distanceMap.get(point).setKey(fullDistance);
+                        }
+                    }
+                }else {
+                    continue;
+                }
+                if (!distanceMap.get(point).getValue()){
+                    if (nextMarker == null) {
+                        nextMarker = new Pair<>(point, distanceMap.get(point).getKey());
+                    } else {
+                        double distance = distanceMap.get(point).getKey();
+                        if (distance < nextMarker.getValue() && distance != -1.0) {
+                            nextMarker.setKey(point);
+                            nextMarker.setValue(distance);
+                        }
                     }
                 }
             }
-
-            processed++;
+            distanceMap.get(marker.getKey()).setValue(true);
+            marker = nextMarker;
+        }
+        for (Point point : distanceMap.keySet()){
+            System.out.println(point.getCoordinates().toString()+" "+distanceMap.get(point).toString());
         }
 
-
         return null;
+    }
+
+    private static boolean allProcessed(Collection<Pair<Double, Boolean>> pairs) {
+        for (Pair<Double, Boolean> pair : pairs) {
+            if (!pair.getValue()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static ArrayList<Coordinates> getNeighbours(Coordinates coordinates, int[][] checkedMatrix) {
