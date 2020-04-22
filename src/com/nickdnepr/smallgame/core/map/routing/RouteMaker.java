@@ -18,20 +18,21 @@ public class RouteMaker {
     }
 
 
-    //TODO split in separate methods
     public Route getRoute(Coordinates source, Coordinates destination, RoutingPredicate routingPredicate) {
         Point sourcePoint = gameMap.getPoint(source);
-        Point destinationPoint = gameMap.getPoint(source);
+        Point destinationPoint = gameMap.getPoint(destination);
         ArrayList<Point> routingAreaPoints = getRoutingArea(source, destination, routingPredicate);
-        double[][] distanceMatrix = getDistanceMatrix(routingAreaPoints, routingPredicate);
-        HashMap<Point, Pair<Double, Boolean>> distanceMap = getDistanceMap(routingAreaPoints, sourcePoint, distanceMatrix);
-
-        for (Point point : distanceMap.keySet()) {
-            System.out.println(point.getCoordinates().toString() + " " + distanceMap.get(point).toString());
+        System.out.println("Routing area calculated");
+        if (!routingAreaPoints.contains(destinationPoint)) {
+            return null;
         }
-
+        double[][] distanceMatrix = getDistanceMatrix(routingAreaPoints, routingPredicate);
+        System.out.println("Distance matrix calculated");
+        HashMap<Point, Pair<Double, Boolean>> distanceMap = getDistanceMap(routingAreaPoints, sourcePoint, distanceMatrix);
+        System.out.println("Distance map calculated");
         ArrayList<Point> routeSequence = getPointsSequence(sourcePoint, destinationPoint, distanceMap, distanceMatrix, routingAreaPoints);
-
+        System.out.println("Route sequence calculated");
+        System.out.println("Over");
         return null;
     }
 
@@ -40,7 +41,7 @@ public class RouteMaker {
         int height = gameMap.getHeight();
         int[][] routingArea = new int[height][width];
         Point sourcePoint = gameMap.getPoint(source);
-        Point destinationPoint = gameMap.getPoint(source);
+        Point destinationPoint = gameMap.getPoint(destination);
         ArrayList<Point> pointsToProcess = new ArrayList<>();
         ArrayList<Point> routingAreaPoints = new ArrayList<>();
         pointsToProcess.add(sourcePoint);
@@ -68,34 +69,57 @@ public class RouteMaker {
             pointsToProcess.remove(point);
         }
 
-        System.out.println(routingAreaPoints.size());
+//        System.out.println(routingAreaPoints.size());
         return routingAreaPoints;
     }
 
-    private double[][] getDistanceMatrix(ArrayList<Point> routingAreaPoints, RoutingPredicate routingPredicate){
+    private double[][] getDistanceMatrix(ArrayList<Point> routingAreaPoints, RoutingPredicate routingPredicate) {
+        double millis = System.currentTimeMillis();
         double[][] distanceMatrix = new double[routingAreaPoints.size()][routingAreaPoints.size()];
         for (int y = 0; y < routingAreaPoints.size(); y++) {
             for (int x = 0; x < routingAreaPoints.size(); x++) {
                 distanceMatrix[y][x] = routingPredicate.getMovementPrice(routingAreaPoints.get(x), routingAreaPoints.get(y));
             }
         }
+        System.out.println("Matrix time: " + (System.currentTimeMillis() - millis));
         return distanceMatrix;
     }
 
+//    private double[][] getDistanceMatrix(ArrayList<Point> routingAreaPoints, RoutingPredicate routingPredicate) {
+//        double millis = System.currentTimeMillis();
+//        double[][] distanceMatrix = new double[routingAreaPoints.size()][routingAreaPoints.size()];
+//        int size = routingAreaPoints.size();
+//        for (int y = 0; y < size; y++) {
+//            distanceMatrix[y][y] = 0;
+//            for (int x = y + 1; x < size; x++) {
+//                double price = routingPredicate.getMovementPrice(routingAreaPoints.get(x), routingAreaPoints.get(y));
+//                distanceMatrix[y][x] = price;
+////                distanceMatrix[x][y] = price;
+//            }
+//        }
+//        System.out.println("Matrix time: "+(System.currentTimeMillis() - millis));
+//        return distanceMatrix;
+//    }
 
     private HashMap<Point, Pair<Double, Boolean>> getDistanceMap(ArrayList<Point> routingAreaPoints, Point sourcePoint, double[][] distanceMatrix) {
 
-
+        System.out.println("-- Distance map init");
         HashMap<Point, Pair<Double, Boolean>> distanceMap = new HashMap<>();
         Pair<Point, Double> marker = new Pair<>(sourcePoint, 0.0);
         distanceMap.put(sourcePoint, new Pair<>(0.0, false));
         for (Point point : routingAreaPoints) {
             distanceMap.putIfAbsent(point, new Pair<>(-1.0, false));
         }
-        while (!allProcessed(distanceMap.values())) {
+        System.out.println("-- Distance map all points added");
+        int processed = 0;
+        double millis = System.currentTimeMillis();
+//        while (allProcessed(distanceMap.values())){
+        while (processed < distanceMap.size()) {
+            System.out.println(marker.getKey().toString());
             Pair<Point, Double> nextMarker = null;
-            for (Point point : distanceMap.keySet()) {
-                if (point != marker.getKey()) {
+            for (Point point : getProcessingNeighbours(marker.getKey(), routingAreaPoints)) {
+//                getProcessingNeighbours(point);
+                if (point != marker.getKey() && !distanceMap.get(point).getValue()) {
                     double rawDistance = distanceMatrix[routingAreaPoints.indexOf(point)][routingAreaPoints.indexOf(marker.getKey())];
                     if (rawDistance > 0) {
                         double fullDistance = rawDistance + distanceMap.get(marker.getKey()).getKey();
@@ -105,13 +129,31 @@ public class RouteMaker {
                         }
                     }
                 } else {
-                    continue;
+//                    continue;
                 }
-                if (!distanceMap.get(point).getValue()) {
+//                if (!distanceMap.get(point).getValue()) {
+//                    if (nextMarker == null) {
+//                        if (distanceMap.get(point).getKey() != -1.0) {
+//                            nextMarker = new Pair<>(point, distanceMap.get(point).getKey());
+//                        }
+//                    } else {
+//                        double distance = distanceMap.get(point).getKey();
+//                        if (distance < nextMarker.getValue() && distance != -1.0) {
+//                            nextMarker.setKey(point);
+//                            nextMarker.setValue(distance);
+//                        }
+//                    }
+//                }
+            }
+            distanceMap.get(marker.getKey()).setValue(true);
+            processed++;
+            for (Point point : distanceMap.keySet()) {
+                Pair<Double, Boolean> pair = distanceMap.get(point);
+                if (!pair.getValue()) {
                     if (nextMarker == null) {
-                        nextMarker = new Pair<>(point, distanceMap.get(point).getKey());
+                        nextMarker = new Pair<>(point, pair.getKey());
                     } else {
-                        double distance = distanceMap.get(point).getKey();
+                        double distance = pair.getKey();
                         if (distance < nextMarker.getValue() && distance != -1.0) {
                             nextMarker.setKey(point);
                             nextMarker.setValue(distance);
@@ -119,8 +161,10 @@ public class RouteMaker {
                     }
                 }
             }
-            distanceMap.get(marker.getKey()).setValue(true);
             marker = nextMarker;
+
+//            System.out.println("Processed: " + processed + "/" + distanceMap.size());
+//            System.out.println("Point processed: " + (System.currentTimeMillis() - millis));
         }
         return distanceMap;
     }
@@ -129,20 +173,46 @@ public class RouteMaker {
         ArrayList<Point> finalSequence = new ArrayList<>();
         finalSequence.add(destinationPoint);
         while (!finalSequence.contains(sourcePoint)) {
+//            System.out.println("Loooop2");
             Point processingPoint = finalSequence.get(0);
-            for (Point p: distanceMap.keySet()){
-
+            for (Point nextPoint : distanceMap.keySet()) {
+                if (nextPoint != processingPoint) {
+                    double rawDistance = distanceMatrix[routingAreaPoints.indexOf(nextPoint)][routingAreaPoints.indexOf(processingPoint)];
+                    if (rawDistance != -1.0) {
+                        if (Math.abs(distanceMap.get(processingPoint).getKey() - rawDistance - distanceMap.get(nextPoint).getKey()) < 0.001) {
+                            finalSequence.add(0, nextPoint);
+                            break;
+                        }
+                    }
+                }
             }
         }
+//        System.out.println(finalSequence.toString());
         return finalSequence;
     }
 
+    private ArrayList<Point> getProcessingNeighbours(Point point, ArrayList<Point> routingAreaPoints) {
+        ArrayList<Point> points = new ArrayList<>();
+        ArrayList<Coordinates> coordinates = getNeighbours(point.getCoordinates(), new int[gameMap.getHeight()][gameMap.getWidth()]);
+        for (Coordinates cords : coordinates) {
+            Point neighbour = gameMap.getPoint(cords);
+            if (routingAreaPoints.contains(neighbour)) {
+                points.add(neighbour);
+            }
+        }
+        return points;
+    }
+
     private static boolean allProcessed(Collection<Pair<Double, Boolean>> pairs) {
+        long startMillis = System.currentTimeMillis();
+//        System.out.println("-- allProcessed start");
         for (Pair<Double, Boolean> pair : pairs) {
             if (!pair.getValue()) {
+//                System.out.println("-- allProcessed end " + (System.currentTimeMillis() - startMillis));
                 return false;
             }
         }
+//        System.out.println("-- allProcessed end " + (System.currentTimeMillis() - startMillis));
         return true;
     }
 

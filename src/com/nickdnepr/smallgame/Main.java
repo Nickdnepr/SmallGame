@@ -29,19 +29,21 @@ public class Main {
         gameMap.addPoint(new Point(new Coordinates(2, 2), Relief.EARTH));
 
         RouteMaker routeMaker = new RouteMaker(gameMap);
-        routeMaker.getRoute(new Coordinates(1, 0), new Coordinates(2, 2), RoutingPredicate.standardPredicate());
+        routeMaker.getRoute(new Coordinates(1, 0), new Coordinates(0, 2), RoutingPredicate.standardPredicate());
+        System.out.println("Time: "+(System.currentTimeMillis() - millis));
+        millis = System.currentTimeMillis();
 
-//        int width = 2;
-//        int height = 2;
-//        GameMap gameMap = new GameMap(width, height);
-////        gameMap.getPoint(new Coordinates(40,40));
-//        for (int y = 0; y < height; y++) {
-//            for (int x = 0; x < width; x++) {
-//                gameMap.addPoint(new Point(new Coordinates(x,y), Relief.EARTH));
-//            }
-//        }
-//        RouteMaker routeMaker = new RouteMaker(gameMap);
-//        routeMaker.getRoute(new Coordinates(0, 0), new Coordinates(2, 2), RoutingPredicate.standardPredicate());
+        int width = 64;
+        int height = 64;
+        GameMap gameMap2 = new GameMap(width, height);
+//        gameMap.getPoint(new Coordinates(40,40));
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                gameMap2.addPoint(new Point(new Coordinates(x,y), Relief.EARTH));
+            }
+        }
+        RouteMaker routeMaker2 = new RouteMaker(gameMap2);
+        routeMaker2.getRoute(new Coordinates(0, 0), new Coordinates(2, 2), RoutingPredicate.standardPredicate());
 //        CoordinatesUtils.getNeighbours(new Coordinates(0,0),2048, 2048);
 
 //        Point[][] points = new Point[2048][2048]; 4 000 000
