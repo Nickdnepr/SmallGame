@@ -111,39 +111,30 @@ public class RouteMaker {
             distanceMap.putIfAbsent(point, new Pair<>(-1.0, false));
         }
         System.out.println("-- Distance map all points added");
+//        System.out.println("\n\n\n\n\n");
         int processed = 0;
         double millis = System.currentTimeMillis();
 //        while (allProcessed(distanceMap.values())){
         while (processed < distanceMap.size()) {
-            System.out.println(marker.getKey().toString());
+//            System.out.println("\n\nMarker is " + marker.getKey().getCoordinates().toString());
             Pair<Point, Double> nextMarker = null;
             for (Point point : getProcessingNeighbours(marker.getKey(), routingAreaPoints)) {
+//                System.out.println("Point is " + point.getCoordinates().toString());
 //                getProcessingNeighbours(point);
                 if (point != marker.getKey() && !distanceMap.get(point).getValue()) {
                     double rawDistance = distanceMatrix[routingAreaPoints.indexOf(point)][routingAreaPoints.indexOf(marker.getKey())];
+//                    System.out.println("Raw distance is " + rawDistance);
                     if (rawDistance > 0) {
+
                         double fullDistance = rawDistance + distanceMap.get(marker.getKey()).getKey();
                         double pointDistance = distanceMap.get(point).getKey();
                         if (pointDistance > fullDistance || pointDistance == -1.0) {
+//                            System.out.println(marker.toString() + " -> " + point.toString() + " from " + pointDistance + " to " + fullDistance);
+//                            System.out.println("Changing " + pointDistance + " to " + fullDistance);
                             distanceMap.get(point).setKey(fullDistance);
                         }
                     }
-                } else {
-//                    continue;
                 }
-//                if (!distanceMap.get(point).getValue()) {
-//                    if (nextMarker == null) {
-//                        if (distanceMap.get(point).getKey() != -1.0) {
-//                            nextMarker = new Pair<>(point, distanceMap.get(point).getKey());
-//                        }
-//                    } else {
-//                        double distance = distanceMap.get(point).getKey();
-//                        if (distance < nextMarker.getValue() && distance != -1.0) {
-//                            nextMarker.setKey(point);
-//                            nextMarker.setValue(distance);
-//                        }
-//                    }
-//                }
             }
             distanceMap.get(marker.getKey()).setValue(true);
             processed++;
@@ -154,14 +145,18 @@ public class RouteMaker {
                         nextMarker = new Pair<>(point, pair.getKey());
                     } else {
                         double distance = pair.getKey();
-                        if (distance < nextMarker.getValue() && distance != -1.0) {
+//                        System.out.println("Marker distance is " + distance);
+                        if ((distance < nextMarker.getValue() && distance != -1.0) || nextMarker.getValue() == -1.0) {
                             nextMarker.setKey(point);
                             nextMarker.setValue(distance);
+//                            System.out.println("New marker is set to " + nextMarker.getKey().getCoordinates().toString() + " with distance " + nextMarker.getValue());
+
                         }
                     }
                 }
             }
             marker = nextMarker;
+
 
 //            System.out.println("Processed: " + processed + "/" + distanceMap.size());
 //            System.out.println("Point processed: " + (System.currentTimeMillis() - millis));

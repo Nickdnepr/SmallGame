@@ -33,6 +33,8 @@ public class Main {
         System.out.println("Time: "+(System.currentTimeMillis() - millis));
         millis = System.currentTimeMillis();
 
+//        System.exit(0);
+
         int width = 64;
         int height = 64;
         GameMap gameMap2 = new GameMap(width, height);
