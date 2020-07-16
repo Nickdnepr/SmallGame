@@ -5,7 +5,7 @@ import com.nickdnepr.smallgame.core.map.Coordinates;
 import com.nickdnepr.smallgame.core.map.GameMap;
 import com.nickdnepr.smallgame.core.map.Point;
 import com.nickdnepr.smallgame.core.map.Relief;
-import com.nickdnepr.smallgame.core.map.routing.RouteMaker;
+import com.nickdnepr.smallgame.core.map.routing.DijkstraRouteMaker;
 import com.nickdnepr.smallgame.core.map.routing.RoutingPredicate;
 
 public class Main {
@@ -28,8 +28,8 @@ public class Main {
         gameMap.addPoint(new Point(new Coordinates(1, 2), Relief.WATER));
         gameMap.addPoint(new Point(new Coordinates(2, 2), Relief.EARTH));
 
-        RouteMaker routeMaker = new RouteMaker(gameMap);
-        routeMaker.getRoute(new Coordinates(1, 0), new Coordinates(0, 2), RoutingPredicate.standardPredicate());
+        DijkstraRouteMaker dijkstraRouteMaker = new DijkstraRouteMaker(gameMap);
+        dijkstraRouteMaker.getRoute(new Coordinates(1, 0), new Coordinates(0, 2), RoutingPredicate.standardPredicate());
         System.out.println("Time: "+(System.currentTimeMillis() - millis));
         millis = System.currentTimeMillis();
 
@@ -44,8 +44,8 @@ public class Main {
                 gameMap2.addPoint(new Point(new Coordinates(x,y), Relief.EARTH));
             }
         }
-        RouteMaker routeMaker2 = new RouteMaker(gameMap2);
-        routeMaker2.getRoute(new Coordinates(0, 0), new Coordinates(2, 2), RoutingPredicate.standardPredicate());
+        DijkstraRouteMaker dijkstraRouteMaker2 = new DijkstraRouteMaker(gameMap2);
+        dijkstraRouteMaker2.getRoute(new Coordinates(0, 0), new Coordinates(2, 2), RoutingPredicate.standardPredicate());
 //        CoordinatesUtils.getNeighbours(new Coordinates(0,0),2048, 2048);
 
 //        Point[][] points = new Point[2048][2048]; 4 000 000

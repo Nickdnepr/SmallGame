@@ -9,15 +9,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class RouteMaker {
+public class DijkstraRouteMaker extends AbstractRouteMaker{
 
-    private GameMap gameMap;
 
-    public RouteMaker(GameMap gameMap) {
-        this.gameMap = gameMap;
+    public DijkstraRouteMaker(GameMap gameMap) {
+        super(gameMap);
     }
 
-
+    @Override
     public Route getRoute(Coordinates source, Coordinates destination, RoutingPredicate routingPredicate) {
         Point sourcePoint = gameMap.getPoint(source);
         Point destinationPoint = gameMap.getPoint(destination);
